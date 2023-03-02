@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MovieCollection
@@ -186,14 +187,47 @@ public class MovieCollection
             System.out.println("" + choiceNum + ". " + member);
         }
 
-        // TODO: Display movies where members are featured
-//        System.out.println("Which cast member would you like to learn more about?");
-//        System.out.print("Enter number: ");
-//
-//        int choice = scanner.nextInt();
-//        scanner.nextLine();
-//
+        System.out.println("Which cast member would you like to learn more about?");
+        System.out.print("Enter number: ");
 
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        String castMemberToSearch = castMembers.get(choice - 1);
+
+        ArrayList<Movie> moviesFeaturingCastMember = getMoviesFeaturingCastMember(castMemberToSearch);
+
+        for (int i = 0; i < moviesFeaturingCastMember.size(); i++) {
+            String movieTitle = moviesFeaturingCastMember.get(i).getTitle();
+            int choiceNum = i + 1;
+
+            System.out.println("" + choiceNum + ". " + movieTitle);
+        }
+
+        System.out.println("Which movie would you like to learn more about?");
+        System.out.print("Enter number: ");
+
+        choice = scanner.nextInt();
+        scanner.nextLine();
+
+        Movie selectedMovie = moviesFeaturingCastMember.get(choice - 1);
+        displayMovieInfo(selectedMovie);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
+    }
+
+    private ArrayList<Movie> getMoviesFeaturingCastMember(String castMemberToSearch) {
+        ArrayList<Movie> results = new ArrayList<>();
+
+        for (Movie movie : movies) {
+            String[] movieCastMembers = movie.getCast().split("\\|");
+            String asString = Arrays.toString(movieCastMembers);
+
+            if (asString.toLowerCase().contains(castMemberToSearch)) {
+                results.add(movie);
+            }
+        }
+        return results;
     }
 
     private void sortCastMembers(ArrayList<String> castMembers) {
