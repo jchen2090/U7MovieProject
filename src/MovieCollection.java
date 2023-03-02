@@ -7,11 +7,13 @@ import java.util.Scanner;
 public class MovieCollection
 {
     private ArrayList<Movie> movies;
+    private ArrayList<String> allCastMembers;
     private Scanner scanner;
 
     public MovieCollection(String fileName)
     {
         importMovieList(fileName);
+        loadCastMembers();
         scanner = new Scanner(System.in);
     }
 
@@ -164,7 +166,47 @@ public class MovieCollection
 
     private void searchCast()
     {
+        System.out.print("Enter a cast member to search: ");
+        String castMemberSearchTerm = scanner.nextLine().toLowerCase();
 
+        ArrayList<String> castMembers = new ArrayList<>();
+
+        for (String castMember : allCastMembers) {
+            if (castMember.contains(castMemberSearchTerm)) {
+                castMembers.add(castMember);
+            }
+        }
+
+        sortCastMembers(castMembers);
+
+        for (int i = 0; i < castMembers.size(); i++) {
+            String member = castMembers.get(i);
+            int choiceNum = i + 1;
+
+            System.out.println("" + choiceNum + ". " + member);
+        }
+
+        // TODO: Display movies where members are featured
+//        System.out.println("Which cast member would you like to learn more about?");
+//        System.out.print("Enter number: ");
+//
+//        int choice = scanner.nextInt();
+//        scanner.nextLine();
+//
+
+    }
+
+    private void sortCastMembers(ArrayList<String> castMembers) {
+        for (int i = 1; i < castMembers.size(); i++) {
+            String temp = castMembers.get(i);
+
+            int possibleIdx = i;
+            while (possibleIdx > 0 && temp.compareTo(castMembers.get(possibleIdx - 1)) < 0) {
+                castMembers.set(possibleIdx, castMembers.get(possibleIdx - 1));
+                possibleIdx--;
+            }
+            castMembers.set(possibleIdx, temp);
+        }
     }
 
     private void searchKeywords()
@@ -257,6 +299,22 @@ public class MovieCollection
         {
             // Print out the exception that occurred
             System.out.println("Unable to access " + exception.getMessage());
+        }
+    }
+
+    private void loadCastMembers() {
+        allCastMembers = new ArrayList<>();
+
+        for (Movie movie : movies) {
+            String[] movieCastMembers = movie.getCast().split("\\|");
+
+            for (String member : movieCastMembers) {
+                member = member.toLowerCase();
+                if (!allCastMembers.contains(member)) {
+                    allCastMembers.add(member);
+                }
+            }
+
         }
     }
 }
