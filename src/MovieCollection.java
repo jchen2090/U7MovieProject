@@ -331,7 +331,46 @@ public class MovieCollection
 
     private void listHighestRated()
     {
+        filterMoviesByRatingDescending();
+        ArrayList<Movie> top50RatedMovies = new ArrayList<>();
 
+        for (int i = movies.size() - 1; i > movies.size() - 51; i--) {
+            top50RatedMovies.add(movies.get(i));
+        }
+
+        for (int i = 0; i < top50RatedMovies.size(); i++) {
+            String movieTitle = top50RatedMovies.get(i).getTitle();
+            double movieRating = top50RatedMovies.get(i).getUserRating();
+            int choiceNum = i + 1;
+
+            System.out.println("" + choiceNum + ". " + movieTitle + ": " + movieRating);
+        }
+
+        System.out.println("Which movie would you like to learn more about?");
+        System.out.print("Enter number: ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        Movie selectedMovie = top50RatedMovies.get(choice - 1);
+        displayMovieInfo(selectedMovie);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
+    }
+
+    private void filterMoviesByRatingDescending() {
+        for (int i = 0; i < movies.size(); i++) {
+            int pos = i;
+
+            for (int j = i; j < movies.size(); j++) {
+                if (movies.get(j).getUserRating() < movies.get(pos).getUserRating())
+                    pos = j;
+            }
+            Movie min = movies.get(pos);
+            movies.set(pos, movies.get(i));
+            movies.set(i, min);
+        }
     }
 
     private void listHighestRevenue()
