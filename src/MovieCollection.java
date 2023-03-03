@@ -9,12 +9,14 @@ public class MovieCollection
 {
     private ArrayList<Movie> movies;
     private ArrayList<String> allCastMembers;
+    private ArrayList<String> allGenres;
     private Scanner scanner;
 
     public MovieCollection(String fileName)
     {
         importMovieList(fileName);
         loadCastMembers();
+        loadGenres();
         scanner = new Scanner(System.in);
     }
 
@@ -178,7 +180,7 @@ public class MovieCollection
             }
         }
 
-        sortCastMembers(castMembers);
+        sortStringArrayList(castMembers);
 
         for (int i = 0; i < castMembers.size(); i++) {
             String member = castMembers.get(i);
@@ -230,18 +232,6 @@ public class MovieCollection
         return results;
     }
 
-    private void sortCastMembers(ArrayList<String> castMembers) {
-        for (int i = 1; i < castMembers.size(); i++) {
-            String temp = castMembers.get(i);
-
-            int possibleIdx = i;
-            while (possibleIdx > 0 && temp.compareTo(castMembers.get(possibleIdx - 1)) < 0) {
-                castMembers.set(possibleIdx, castMembers.get(possibleIdx - 1));
-                possibleIdx--;
-            }
-            castMembers.set(possibleIdx, temp);
-        }
-    }
 
     private void searchKeywords()
     {
@@ -285,7 +275,58 @@ public class MovieCollection
 
     private void listGenres()
     {
+        sortStringArrayList(allGenres);
 
+        for (int i = 0; i < allGenres.size(); i++) {
+            String genre = allGenres.get(i);
+            int choiceNum = i + 1;
+
+            System.out.println("" + choiceNum + ". " + genre);
+        }
+
+        System.out.println("Which genre would you like to sort by?");
+        System.out.print("Enter number: ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        String genre = allGenres.get(choice - 1);
+        
+        ArrayList<Movie> filteredMoviesByGenre = filterMoviesByGenre(genre);
+
+
+        for (int i = 0; i < filteredMoviesByGenre.size(); i++) {
+            String movieTitle = filteredMoviesByGenre.get(i).getTitle();
+            int choiceNum = i + 1;
+
+            System.out.println("" + choiceNum + ". " + movieTitle);
+        }
+
+        System.out.println("Which movie would you like to learn more about?");
+        System.out.print("Enter number: ");
+
+        choice = scanner.nextInt();
+        scanner.nextLine();
+
+        Movie selectedMovie = filteredMoviesByGenre.get(choice - 1);
+        displayMovieInfo(selectedMovie);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
+    }
+
+    private ArrayList<Movie> filterMoviesByGenre(String genre) {
+        ArrayList<Movie> result = new ArrayList<>();
+        
+        for (Movie movie : movies) {
+            String[] movieGenres = movie.getGenres().split("\\|");
+
+            String asString = Arrays.toString(movieGenres);
+            if (asString.toLowerCase().contains(genre)) {
+                result.add(movie);
+            }
+        }
+        return result;
     }
 
     private void listHighestRated()
@@ -349,6 +390,34 @@ public class MovieCollection
                 }
             }
 
+        }
+    }
+
+    private void loadGenres() {
+        allGenres = new ArrayList<>();
+
+        for (Movie movie : movies) {
+            String[] movieGenres = movie.getGenres().split("\\|");
+
+            for (String genre : movieGenres) {
+                genre = genre.toLowerCase();
+                if (!allGenres.contains(genre)) {
+                    allGenres.add(genre);
+                }
+            }
+        }
+    }
+
+    private void sortStringArrayList(ArrayList<String> strings) {
+        for (int i = 1; i < strings.size(); i++) {
+            String temp = strings.get(i);
+
+            int possibleIdx = i;
+            while (possibleIdx > 0 && temp.compareTo(strings.get(possibleIdx - 1)) < 0) {
+                strings.set(possibleIdx, strings.get(possibleIdx - 1));
+                possibleIdx--;
+            }
+            strings.set(possibleIdx, temp);
         }
     }
 }
